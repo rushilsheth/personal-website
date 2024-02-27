@@ -1,0 +1,19 @@
+---
+type Props = {
+  label: string;
+  skills: Array<string>;
+};
+---
+
+<div class="flex flex-col">
+  <h4 class="mb-1">{Astro.props.label}</h4>
+  <div class="flex flex-row flex-wrap gap-2">
+    {
+      Astro.props.skills.map((skill) => (
+        <p class="skill-pill">
+          {skill}
+        </p>
+      ))
+    }
+  </div>
+</div>
