@@ -6,8 +6,6 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 import { Image } from "astro:assets";
 
-import steve from "../assets/steve.jpg";
-
 interface Props {
   showNav?: boolean;
   showFooter?: boolean;
@@ -25,6 +23,7 @@ const { docTitle, docDescription, title, image, showNav, showFooter = true } = A
   <head>
     <BaseHead title={docTitle ?? SITE_TITLE} description={docDescription ?? SITE_DESCRIPTION} image={image} />
   </head>
+  <Header />
   <body class="flex min-h-[100dvh] w-screen flex-col bg-white">
     <main class="mx-auto w-full grow py-20 lg:max-w-prose lg:px-0 lg:py-32"><slot /></main>
     <Footer />

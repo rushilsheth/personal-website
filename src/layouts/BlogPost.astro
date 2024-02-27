@@ -6,27 +6,18 @@ import { GetImageResult } from "astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 
-type Props = CollectionEntry<"blog">["data"] & {
-  headings: CollectionEntry<"blog">["headings"];
-};
+type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, heroImage, heroImageCaption, headings} = Astro.props;
-const filteredHeaders = headings.filter(({ depth }) => depth < 4);
-
-let metaImg: GetImageResult | undefined = undefined;
-if (heroImage) {
-  metaImg = await getImage({ src: heroImage, format: "webp", height: 800, width: 1200 });
-}
 ---
-
-<MainLayout title={title} docTitle={title} docDescription={description} showNav={true} image={metaImg?.src}>
+<MainLayout title={title} docTitle={title} docDescription={description} showNav={true} >
   <article
     class="padded-container article prose prose-indigo mx-auto prose-pre:rounded-sm prose-pre:bg-slate-200 prose-pre:p-1"
   >
     <h1 class="page-title mb-2">{title}</h1>
     {description && <h4>{description}</h4>}
 
-    {pubDate && <FormattedDate date={pubDate} class="text-sm" />}
+    {pubDate && <FormattedDate date={pubDate}/>}
     {
       heroImage && (
         <figure class="my-12">
@@ -52,41 +43,3 @@ if (heroImage) {
     </div>
   </article>
 </MainLayout>
-
-<script>
-  const observer = new IntersectionObserver((entries) => {
-    const firstIntersecter = entries.filter((entry) => entry.isIntersecting).at(0);
-
-    if (!firstIntersecter) return;
-    document
-      .querySelector(`.toc-element[data-toc-pointer="${firstIntersecter.target.id}"]`)
-      ?.classList.add("toc-element--intersection");
-
-    document.querySelectorAll(".toc-element").forEach((el) => {
-      if (el.dataset.tocPointer !== firstIntersecter.target.id) {
-        el.classList.remove("toc-element--intersection");
-      }
-    });
-  });
-  document.querySelectorAll("h2[id],h3[id]").forEach((el) => observer.observe(el));
-</script>
-
-<style is:global>
-  .toc-element {
-    @apply relative;
-
-    &--intersection,
-    &:hover {
-      @apply bg-blue-100 text-blue-800 underline transition;
-
-      &:before {
-        @apply !bg-blue-600;
-      }
-    }
-
-    &:before {
-      @apply absolute inset-y-0 left-0 h-full w-0.5 bg-slate-300 transition;
-      content: " ";
-    }
-  }
-</style>

@@ -1,10 +1,10 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import Header from "../components/Header.astro";
 
 import { Content, getHeadings } from "../content/resume.mdx";
 import BlogPost from "../layouts/BlogPost.astro";
 ---
-
-<BlogPost title="The Resume" headings={getHeadings()} showHowler={false}>
-  <Content />
+<BlogPost title="The Resume" headings={getHeadings()} >
+    <Content />
 </BlogPost>
