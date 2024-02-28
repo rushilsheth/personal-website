@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import BlogCard from "../components/BlogCard.astro";
+import MainLayout from "../layouts/MainLayout.astro";
 
 import { getCollection } from "astro:content";
 const posts = (await getCollection("blog"))
@@ -13,22 +14,17 @@ const posts = (await getCollection("blog"))
   .slice(0, 3);
 ---
 
-<!doctype html>
-<html lang="en">
+<MainLayout showNav={true} title="Steve Coffey">
 	
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1 class="page-title">🤝 Welcome!</h1>
+	
+			<h1 class="page-title" style="text-align: center;">🤝</h1>
 			<p>
 
 			👋 I’m Rushil, a passionate Machine Learning Engineer, outdoor enthusiast, and a devoted dog lover. Originally from St. Louis, Missouri (Go Cardinals!), I've been embracing the vibrant life and opportunities in the Bay Area for nearly a decade. Here in the Bay, I've found a perfect blend of intellectual stimulation, breathtaking nature, and culinary delights that keep me inspired every day.
 			<br />
 			At EchoAI, my role involves leveraging the transformative power of LLMs to discover hidden insights in customer conversations and amplify customers' voices across a company. Beyond work, I'm constantly exploring the potential of GenAI. My adventures in AI are not just about pushing boundaries in technology, but also about finding harmony between our digital and natural worlds.
 			</p>
+			<br />
 			<p>
 				<h3>Recent Interests:</h3>
 				<li>🚀 RAG - search engines are not outdated 😉</li>
@@ -36,10 +32,13 @@ const posts = (await getCollection("blog"))
 				<li>📝 Fine Tuned Models for situations and the everyday person</li>
 				<li>⚡️ GenAI and productivity boosts</li>
 				<br />
-				Want to get in touch or have some reading material to suggest? Drop me a line at <a href="mailto:sheth.rushil@gmail.com">sheth.rushil@gmail.com</a></p>
+				Want to get in touch or have some reading material to suggest? Hit me up at <a href="mailto:sheth.rushil@gmail.com">sheth.rushil@gmail.com</a></p>
 			</p>
 			
-			<h2>From the blog</h2>
+			<br />
+			<br />
+			<br />
+			<h3>From the blog:</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 {
     posts.map(({ slug, data }) => (
@@ -60,7 +59,4 @@ const posts = (await getCollection("blog"))
 			- beer week talk
 			- busco-fin
 			- "personal model"
-		</main>
-		<Footer />
-	</body>
-</html>
+</MainLayout>
