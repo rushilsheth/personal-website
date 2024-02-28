@@ -3,6 +3,14 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import BlogCard from "../components/BlogCard.astro";
+
+import { getCollection } from "astro:content";
+const posts = (await getCollection("blog"))
+  .filter((p) => (!p.data.draft ?? false) || import.meta.env.MODE === "development")
+  .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
+  .reverse()
+  .slice(0, 3);
 ---
 
 <!doctype html>
@@ -13,37 +21,45 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1 class="page-title">🤝 Welcome! - rushil</h1>
+			<h1 class="page-title">🤝 Welcome!</h1>
 			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
+
+			👋 I’m Rushil, a passionate Machine Learning Engineer, outdoor enthusiast, and a devoted dog lover. Originally from St. Louis, Missouri (Go Cardinals!), I've been embracing the vibrant life and opportunities in the Bay Area for nearly a decade. Here in the Bay, I've found a perfect blend of intellectual stimulation, breathtaking nature, and culinary delights that keep me inspired every day.
+			<br />
+			At EchoAI, my role involves leveraging the transformative power of LLMs to discover hidden insights in customer conversations and amplify customers' voices across a company. Beyond work, I'm constantly exploring the potential of GenAI. My adventures in AI are not just about pushing boundaries in technology, but also about finding harmony between our digital and natural worlds.
 			</p>
 			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
+				<h3>Recent Interests:</h3>
+				<li>🚀 RAG - search engines are not outdated 😉</li>
+				<li>? LLM Eval - big trust</li>
+				<li>📝 Fine Tuned Models for situations and the everyday person</li>
+				<li>⚡️ GenAI and productivity boosts</li>
+				<br />
+				Want to get in touch or have some reading material to suggest? Drop me a line at <a href="mailto:sheth.rushil@gmail.com">sheth.rushil@gmail.com</a></p>
 			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/pages/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			
+			<h2>From the blog</h2>
+			<div
+      			class="scrollbar-hidden flex max-w-full snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-scroll py-8 md:snap-none">
+      {
+        posts.map(({ slug, data }) => (
+          <BlogCard
+            slug={slug}
+            title={data.title}
+            heroImage={data.heroImage}
+            description={data.description}
+            pubDate={data.pubDate}
+            class="w-full min-w-[300px] grow snap-start md:min-w-0"
+          />
+        ))
+      }
+    </div>
+			
+			Blog stuff
+			- autograders
+			- beer week talk
+			- busco-fin
+			- "personal model"
 		</main>
 		<Footer />
 	</body>
