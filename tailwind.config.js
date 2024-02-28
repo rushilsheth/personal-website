@@ -9,6 +9,26 @@ module.exports = {
         "peachi": ["Peachi", ...defaultTheme.fontFamily.serif],
       },
       typography: ({theme}) => ({
+        DEFAULT: {
+          css: {
+            // Custom styles for `code` elements
+            code: {
+                '&::before': {
+                  content: '"" !important',
+                },
+                '&::after': {
+                  content: '"" !important',
+                },
+              backgroundColor: theme('colors.gray.100'), // Example background color
+              fontWeight: '400', // Reset font weight if needed
+              
+            },
+            // Ensure other elements are styled as intended
+            '--tw-prose-headings': theme('colors.black[800]'),
+            '--tw-prose-body': theme('colors.black[900]'),
+            '--tw-prose-bold': theme('colors.black[900]'),
+          },
+        },
         black: {
           css: {
             '--tw-prose-headings': theme('colors.black[800]'),
