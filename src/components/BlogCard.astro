@@ -15,29 +15,30 @@ const { slug, title, description, pubDate, heroImage, class: className } = Astro
 <a
   href={`/blog/${slug}`}
   class:list={[
-    "not-prose bg-slate-40 flex flex-col rounded-lg border border-slate-200 no-underline shadow transition hover:-translate-y-px hover:shadow-lg lg:max-w-[200px]",
-    className,
+    "bg-gradient-to-r from-purple-500 to-pink-500 flex flex-col rounded-lg shadow-lg transition hover:-translate-y-1",
+    className, // Additional classes passed from the parent
   ]}
 >
-  <div class="relative grow">
+  <div class="relative">
     <Image
       src={heroImage}
       alt={description}
       height={400}
       width={600}
       format="webp"
-      class="image-noselect h-[170px] w-full rounded-t-lg object-cover object-center"
+      class="h-48 w-full object-cover rounded-t-lg"
     />
-    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent p-4">
-      <h2 class="text-lg font-semibold text-white">
+    <div class="absolute bottom-0 left-0 bg-black bg-opacity-50 w-full">
+      <h2 class="text-lg font-bold text-white p-4">
         {title}
       </h2>
     </div>
   </div>
-
-  <div class="flex flex-shrink flex-col gap-4 p-4 pt-3">
-    <FormattedDate date={pubDate} class="text-sm text-indigo-950" />
-    <p class="line-clamp-2 text-sm font-light leading-tight text-slate-800">
+  <div class="p-4 bg-white rounded-b-lg">
+    <p class="text-sm text-gray-500 mb-2">
+      <FormattedDate date={pubDate} class="uppercase"/>
+    </p>
+    <p class="text-sm text-gray-700 line-clamp-3">
       {description}
     </p>
   </div>

@@ -15,6 +15,7 @@ const posts = (await getCollection("blog"))
 
 <!doctype html>
 <html lang="en">
+	
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
@@ -39,21 +40,20 @@ const posts = (await getCollection("blog"))
 			</p>
 			
 			<h2>From the blog</h2>
-			<div
-      			class="scrollbar-hidden flex max-w-full snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-scroll py-8 md:snap-none">
-      {
-        posts.map(({ slug, data }) => (
-          <BlogCard
-            slug={slug}
-            title={data.title}
-            heroImage={data.heroImage}
-            description={data.description}
-            pubDate={data.pubDate}
-            class="w-full min-w-[300px] grow snap-start md:min-w-0"
-          />
-        ))
-      }
-    </div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+{
+    posts.map(({ slug, data }) => (
+    <BlogCard
+        slug={slug}
+        title={data.title}
+        heroImage={data.heroImage}
+        description={data.description}
+        pubDate={data.pubDate}
+        class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+    />
+    ))
+}
+</div>
 			
 			Blog stuff
 			- autograders

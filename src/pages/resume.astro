@@ -5,6 +5,6 @@ import Header from "../components/Header.astro";
 import { Content, getHeadings } from "../other-content/resume.mdx";
 import BlogPost from "../layouts/BlogPost.astro";
 ---
-<BlogPost title="The Resume" headings={getHeadings()} >
+<BlogPost title="The Resume" headings={getHeadings().map(heading => heading.text)} >
     <Content />
 </BlogPost>
