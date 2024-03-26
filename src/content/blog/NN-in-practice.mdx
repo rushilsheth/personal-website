@@ -1,0 +1,58 @@
+---
+title: 'Neural Network Pytorch Tips'
+description: 'strategies and common pitfalls for training neural networks in PyTorch'
+pubDate: 'Oct 18, 2021'
+draft: true
+---
+
+# Practical Advice - next blog post
+
+https://www.trentonsystems.com/en-us/resource-hub/blog/neural-networks
+
+## training data
+
+## training param considerations
+
+PyTorch offers a variety of optimization algorithms that extend basic gradient descent to improve convergence, handle noise in stochastic gradient calculations, and navigate the parameter space more effectively. Here are some of the commonly used optimizers in PyTorch:
+
+1. **Stochastic Gradient Descent (SGD)**: This is the simplest form of gradient descent optimization algorithm. It updates parameters using a fixed learning rate and does not include momentum. PyTorch allows for adding momentum to SGD to accelerate convergence.
+
+   ```python
+   torch.optim.SGD(params, lr=<learning_rate>, momentum=0, dampening=0, weight_decay=0, nesterov=False)
+   ```
+
+2. **Momentum**: It's often used with SGD to dampen oscillations. Momentum does this by adding a fraction of the previous update vector to the current update vector.
+
+3. **Nesterov Accelerated Gradient (NAG)**: It's a version of momentum SGD that has a smarter calculation of the gradient at an intermediate position. This can lead to faster convergence.
+
+4. **Adagrad**: This optimizer adapts the learning rate to the parameters, performing larger updates for infrequent parameters and smaller updates for frequent ones. It's particularly useful for sparse data.
+
+   ```python
+   torch.optim.Adagrad(params, lr=0.01, lr_decay=0, weight_decay=0, initial_accumulator_value=0, eps=1e-10)
+   ```
+
+5. **RMSprop**: This optimizer divides the learning rate for each weight by a running average of the magnitudes of recent gradients for that weight. This can help in addressing Adagrad's radically diminishing learning rates.
+
+   ```python
+   torch.optim.RMSprop(params, lr=0.01, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0, centered=False)
+   ```
+
+6. **Adam (Adaptive Moment Estimation)**: Adam combines the best properties of the AdaGrad and RMSProp algorithms to provide an optimization algorithm that can handle sparse gradients on noisy problems.
+
+   ```python
+   torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+   ```
+
+7. **AdamW**: This is a variant of Adam with a more effective weight decay regularization.
+
+   ```python
+   torch.optim.AdamW(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01, amsgrad=False)
+   ```
+
+8. **Adamax**: It's a variant of Adam based on the infinity norm, which might be more robust in certain scenarios compared to the standard Adam's L2 norm.
+
+   ```python
+   torch.optim.Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+   ```
+
+Each of these optimizers adjusts the model's weights with the goal of minimizing the loss function, but they differ in how they adapt the learning rate during training and how they use previous gradients to influence the direction and magnitude of the weight updates. The choice of optimizer can significantly affect the speed and quality of the training process, and it may require some experimentation to find the best optimizer for a specific problem or dataset.

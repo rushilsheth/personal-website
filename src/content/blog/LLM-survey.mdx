@@ -1,0 +1,18 @@
+---
+title: 'LLM explained'
+description: 'putting the amazing paper, "A Survey of Large Language Models" in my own words'
+pubDate: 'Nov 7 2023'
+heroImage: '/LLM.jpeg'
+---
+
+auto-regression. auto meaning self. regression meaning predict. predict next token given previous tokens: `P(t_t | t_1, t_2, ..., t_{t-1})`. LLM training is self-surpervised learning.
+
+## Overview
+
+Objective of LLM is to predict the next word in a sequence of words. This is done by using a model that is trained on a large corpus of text.
+
+
+Levels for dealing with LLMs:
+1. Prompt Engineering: do not change any model parameters, only change the input prompt
+2. Fine-tuning: change the model parameters to better fit the data. Update model params given task-specific data
+3. Model Engineering: change the model architecture to better fit the data
