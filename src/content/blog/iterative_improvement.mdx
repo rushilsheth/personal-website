@@ -1,0 +1,53 @@
+---
+title: 'Embracing Iteration'
+description: 'Reflecting on CPU, GPU & the evolution forward'
+pubDate: 'Jan 10 2025'
+heroImage: '/iteration.jpeg'
+---
+# Embracing Iteration: Building Robust LLM Systems in Production
+
+## Introduction
+When tasked with extracting information from rate confirmation PDFs, our team faced a common challenge in modern ML engineering: balancing perfect solutions against practical implementations. This experience taught me valuable lessons about iterative development and the importance of building systems that can learn and improve in production.
+
+## The Challenge: PDF Processing Complexity
+Our goal was seemingly straightforward: extract specific information from rate confirmation PDFs. However, we quickly discovered that the solution would be anything but simple. PDFs came in various formats, and no single approach—whether using vision models, OCR, or markdown converters—worked consistently across all documents.
+
+We had two potential paths forward:
+1. Conduct extensive pre-production testing to find the optimal combination of tools for each PDF type
+2. Build a system that could learn and adapt in production
+
+## The Fallback Architecture
+Instead of trying to perfect our system before deployment, we developed a dynamic fallback mechanism. Here's how it works:
+
+1. Each extraction attempt is scored based on the quality of the extracted sections
+2. Results and scores are persisted to build a knowledge base
+3. Different combinations of tools (vision models, OCR, markdown converters) are tried in sequence
+4. The system learns which combinations work best for different PDF types and sections
+5. The fallback sequence automatically adjusts based on historical performance
+
+While this approach is computationally expensive in the beginning, it becomes more efficient over time as the system learns the optimal tool combinations for different document types.
+
+## Lessons in Production ML Engineering
+As a younger ML engineer, I would have been hesitant to deploy a system without handling every edge case. However, experience has taught me several valuable lessons:
+
+First, perfect solutions often come at the cost of delayed deployment and missed opportunities for real-world learning. Instead, it's crucial to:
+- Deploy quickly with proper safeguards
+- Implement comprehensive logging
+- Monitor system performance
+- Iterate based on production data
+
+Second, when working with LLMs, validation becomes even more critical. Understanding the problem space deeply helps ensure accurate results, even as the system evolves.
+
+## The Power of Iterative Development
+The key insight from this project is that it's okay to start with an inefficient solution if it's coupled with:
+- Robust fallback mechanisms
+- Comprehensive logging
+- Clear understanding of limitations
+- Ability to learn from production data
+
+This approach allows us to deliver value to customers immediately while continuously improving our system based on real-world usage patterns.
+
+## Conclusion
+The journey from a complex PDF processing challenge to a learning, adapting system highlights a crucial truth in modern ML engineering: embracing iteration and building systems that can learn from production data is often more valuable than striving for perfect solutions upfront.
+
+For other ML engineers, especially those early in their careers, remember that it's okay to deploy systems that aren't perfectly optimized. What's important is having the right monitoring, fallbacks, and improvement mechanisms in place. This approach not only delivers value faster but often results in more robust and practical solutions.

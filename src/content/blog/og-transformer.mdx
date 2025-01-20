@@ -24,7 +24,7 @@ To illustrate the attention mechanism, we will first explore how Seq2Seq Machine
   <img src="/og-transformer-blog/rnn_basic_flow.png" style={{ width: "100%", height: "auto" }} alt="Second Image Description" />
 </div>
 
-To implore the attention mechanism, we will send **all hidden states** from the encoder to the decoder. The decoder will then use the hidden states to generate the output sequence. 
+To implore the attention mechanism, we will send **all hidden states** from the encoder to the decoder. The decoder will then use these hidden states to generate the output sequence. 
 
 So now the encoder has completed processing. We are onto the decoder, which has the following structure:
 
@@ -45,21 +45,24 @@ To create the output sequence, the decoder uses the hidden states from the encod
   Your browser does not support the video tag.
 </video>
 
-Okay, lets get back to the transformer model. The transformer model uses the self-attention mechanism instead of the RNN. The self-attention mechanism allows for parallel processing of the input sequence, which makes it faster than the RNN.
+Okay, lets get back to the transformer model. The transformer model uses the self-attention mechanism instead of attention with an RNN. The self-attention mechanism allows for parallel processing of the input sequence, which makes it faster than the RNN.
 
 # Self-Attention Mechanism
 
-Self-Attention is a mechanism that allows the model to focus on different parts of the input sequence when generating the output sequence. It bakes the “understanding” of other relevant words into the one the Transformer is currently processing.
+Self-Attention is a mechanism that allows the model to focus on different parts of the input sequence when generating the output sequence. It bakes the “understanding” of other relevant words into the word the Transformer is currently processing.
 
 The self-attention mechanism is used in the encoder and decoder to capture the dependencies between the input and output sequences.
 
 To calcualte self-attention we embed each input token. Then we calculate three vectors for each token: Query, Key, and Value. These vectors are calculated by multiplying the input embeddings by three weight matrices: $W^Q$, $W^K$, $W^V$ which are learned during the training process. 
 
 2. Assign a score to each word in relation to the current word by taking the dot product of the Query vector of the current word and the Key vector of the other word. We 
-3. divide each score by square root of key vector dimension ($\sqrt{d_k}$) - leads to having more stable gradients
+3. divide each score by square root of key vector dimension ($\sqrt{d_k}$) - This adjustment helps in achieving more stable gradients by scaling down the dot product. Additionally, scaling by this factor prevents extreme values from affecting the softmax operation significantly, thus mitigating the risk of vanishing gradients. For instance, consider two scores before normalization, one being 1 million and the other 10.
 4. Apply a softmax function to the scores to get the weights. 
 5. We then multiply the Value vector of each word by the weights to get the weighted sum.
 6. sum the weighted value vectors from step 5. this the $Z$ matrix in the following diagram
+
+Why exactly do we use $\sqrt{d_k}$: To illustrate why the dot products get large, assume that the components of $\mathbf{q}$ and $\mathbf{k}$ are independent random variables with mean $0$ and variance $1$. Then their dot product, $\mathbf{q} \cdot \mathbf{k} = \sum_{i=1}^{d} q_i k_i$, has mean $0$ and variance $\sigma^2_d$. To counteract this effect, we scale the dot products by $\frac{1}{\sqrt{d}}$.
+
 
 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
   <img src="/og-transformer-blog/weight-matricies.png" style={{ width: "100%", height: "auto" }} alt="First Image Description" />
@@ -72,19 +75,23 @@ Okay, now we can go into the specific names in the transformer model diagram. We
 
 # General Remarks
 
-There are two components to the Transformer model: the encoder(left) and the decoder(right). The encoder processes the input sequence, and the decoder generates the output sequence. The output of the encoder is passed to the decoder, which generates the output sequence.
+There are two components to the Transformer model: the encoder(left) and the decoder(right). The encoder processes the input sequence, and the decoder generates the output sequence. The output of the encoder is passed to the decoder, which ultimately generates the output sequence.
 
 Each compoenent has multiple encoders and decoders respectively($N\times$). These encoders and decoders are identical in structure, but they do not share weights.
 
 # Input Embeddings
 
-We start with the input embeddings. We split the input text into tokens and embed each into a vector space. The weights of the embedding layer are learned during the training process. We then add positional encodings to the embeddings to give the model information about the position of the tokens in the sequence. This is similar to what we did above when we pass the hidden states through the encoder RNN model.
+We start with the input embeddings. We split the input text into tokens and embed each into a learned vector space. The weights of the embedding layer are learned during the training process. 
+
+During inference, each token is then mapped to a unique index in a vocabulary, and this index is used to look up the token's embedding from the embedding layer. These embeddings are essentially dense vector representations that the model learns to associate with each unique token. The collection of all possible token embeddings can be thought of as an embedding matrix, where each row corresponds to the embedding of a token in the vocabulary.
+
+We then add positional encodings to the embeddings to give the model information about the position of the tokens in the sequence. This is similar to what we did above when we pass the hidden states through the encoder RNN model.
 
 # Positional Encodings
 
 Positional encodings can be learned during the training process or predefined by a fixed function. A predefined function enhances flexibility at inference time, accommodating sequences longer than those seen during training.
 
-A separate positional encoding is added to each token embedding, matching the embeddings' dimensionality. The following code, adapted from a tutorial, demonstrates how to generate these encodings. It interleaves sine and cosine functions to capture each token's position within the sequence:
+A distinct positional encoding is added to each token embedding. The following code, adapted from a tutorial, demonstrates how to generate these encodings. It interweaves sine and cosine functions to capture each token's position within the sequence:
 
 ```python
 # Adapted from https://www.tensorflow.org/tutorials/text/transformer
@@ -114,7 +121,7 @@ This code successfully generates positional encodings, but let's delve deeper in
 
 `np.newaxis` is used to add a new dimension to an array. For instance, if the embedding dimension (`d_model`) is 512 and the input sequence length is 10, `np.arange(position)[:, np.newaxis]` results in a shape of (10, 1), and `np.arange(d_model)[np.newaxis, :]` in a shape of (1, 512).
 
-Examining the `angle_rates` calculation more closely, `(2 * (i//2))` determines the dimension for which we are calculating an angle rate. The alternation between sine and cosine functions for consecutive dimensions ensures they carry distinct information, aiding the model's learning process.
+Examining the `angle_rates` calculation more closely, `(2 * (i//2))` determines the dimension for which we are calculating an angle rate. The alternation between sine and cosine functions for consecutive dimensions ensures they carry non-repeating information, aiding the model's learning process.
 
 The division by `d_model` ensures that no exponent exceeds 1, avoiding overly rapid decreases in the sine and cosine waves' frequencies. This precaution also mitigates potential issues with gradients or numerical stability.
 
@@ -130,7 +137,11 @@ A large base number, such as 10,000, allows for smooth variations between positi
 
 # Multi-Head Attention - Encoder
 
-We already went over Self-Attention Above. The authors decided to use multiple heads at each encoder and decoder level. This expands the model’s ability to focus on different positions and gives the attention layer multiple “representation subspaces”. The result is 8 different attention matricies, but the feed forward neural network can only take one. So we concatenate the 8 attention matricies and multiply by a weight matrix(learned during training) to get the final output.
+We already went over Self-Attention above. Multi-headed attention means we just do self-attention multiple times with distinct weight matricies. 
+
+Doing self-attention just once may dilute the specific contributions of individual positions. In other words, the model might lose some details about how different positions uniquely contribute to the overall context, making it harder to distinguish the specific influence of each position within the sequence.
+
+Multi-headed expands the model’s ability to focus on different positions and gives the attention layer multiple “representation subspaces”. The result is 8 different attention matricies, but the feed forward neural network can only take one. So we concatenate the 8 attention matricies and multiply by a weight matrix(learned during training) to get the final output.
 
 <img src="/og-transformer-blog/multi_head_process.png" style={{ width: "auto", height: "auto" }} alt="Description" />
 
@@ -138,19 +149,19 @@ We already went over Self-Attention Above. The authors decided to use multiple h
 
 <img src="/og-transformer-blog/add_norm.png" style={{ width: "400px", height: "auto" }} alt="Description" />
 
-**Add**: A residual connection around each sub-layer adds the output of the sub-layer to its input, thus "carrying over" the original input. This helps mitigate the vanishing gradient problem by allowing gradients to flow directly through the network. Also helps with residual connections and something that was implemented by ResNet.
+**Add**: A residual connection around each sub-layer adds the output of the sub-layer to its input, thus "carrying over" the original input. This helps mitigate the vanishing gradient problem by allowing gradients to flow directly through the network. Also helps with residual connections, orignally implemented by ResNet.
 
 **Norm**: calculates the mean and variance of each vector (here each row of $X + Z$). subtracts the mean from each element and divides by variance so we now we have a standard normal distribution. This normalization helps stabilize the training process and accelerates convergence.
 
 # Feed Forward Neural Network - Encoder
 
-Transforms the representation of each token independently to allow the model to learn more complex features after integrating information across positions in the self-attention layer.
+We have succesfully baked in relationship with other words. The FFNN transforms the representation of each token independently to allow the model to learn more complex features after integrating information across positions in the self-attention layer.
 
 <img src="/og-transformer-blog/attention_ffnn.png" style={{ width: "500px", height: "auto" }} alt="Description" />
 
 The output of the feed forward neural network is passed through another add & norm layer. The output of this FFNN is then used as the input for the next layer in the encoder or is passed to the decoder if it's the last encoder layer.
 
-Lets imagine we have gone through all 6 encoders. Encoder outputs a vector for each word. transform into key and value matrix ($K_{encdec}$, $V_{encdec}$) that is used in all decoders of the decoder. they help the decoder focus on correct part of each sequence. We are ready to look at the decoder side.
+Lets imagine we have gone through all 6 encoders. Encoder outputs a vector for each word. transform into key and value matrix ($K_{encdec}$, $V_{encdec}$) that is used in all decoders of the decoder. They help the decoder focus on correct part of each sequence. We are ready to look at the decoder side.
 
 # Outputs (shifted right)
 
@@ -158,11 +169,11 @@ We shift to the right to ensure the decoder is adhering to its **autoregressive*
 
 During the first word generation, the decoder is mainly relying on the encoder output. As the decoder generates more words, it starts to rely more on its own output.
 
-**Sequential Decoding:** Although the entire sequence is fed into the decoder at once, the masked self-attention ensures that each token is predicted based only on the preceding tokens.
+**Sequential Decoding:** Although the entire sequence is fed into the decoder at once, during training, the masked self-attention ensures that each token is predicted based only on the preceding tokens.
 
 # Positional Encodings - Decoder
 
-Same as above during training.
+Same as above during training. 
 
 During inference, we will have to generate the positional encodings on the fly. We will have to generate the positional encodings after each word generated by the decoder.
 
@@ -174,7 +185,7 @@ Like in the multi-head attention in the encoder, the input is processed through 
 
 # Multi-Head Attention - Decoder
 
-This is the second multi-head attention layer in the decoder and is often termed as encoder-decoder attention. Here, the input Q comes from the output of the previous masked self-attention layer in the decoder. The matrices $W_Q$ are unique to each decoder layer and are learned during training, just like the self-attention layer. However, the keys (K) and values (V) come from the output of the last layer of the encoder. The weight matrices $W_K$ and $W_V$ associated with the encoder output are also learned during training, but once learned, they are fixed and applied equally across all attention heads in this layer.
+This is the second multi-head attention layer in the decoder and is often termed as encoder-decoder attention. Here, the input Q comes from the output of the previous masked self-attention layer in the decoder. The matrices $W_Q$ are unique to each decoder layer and are learned during training, just like the self-attention layer. However, the keys (K) and values (V) weight matricies come from the output of the last layer of the encoder. The weight matrices $W_K$ and $W_V$ associated with the encoder output are also learned during training, but once learned, they are fixed and applied equally across all attention heads in this layer.
 
 The key point here is that while $W_Q$ varies for each attention head within the decoder, $W_K$ and $W_V$ are the same across all heads in this encoder-decoder attention layer. They are also different from the $W_K$ and $W_V$ matrices used in the self-attention layers of the encoder.
 
@@ -187,13 +198,13 @@ To summarize, both attention mechanisms in the decoder utilize learned weight ma
 
 Same as encoder. Expands the dimensionality of the representation of each token independently to allow the model to learn more complex features after integrating information across positions in the self-attention layer.
 
-# Linear
+# Linear - Generator
 
 The Linear layer is a simple fully connected neural network that projects the vector produced by the stack of decoders, into a much, much larger vector called a logits vector. 
 
 Let’s assume that our model knows 10,000 unique English words (our model’s “output vocabulary”) that it’s learned from its training dataset. This would make the logits vector 10,000 cells wide – each cell corresponding to the score of a unique word. That is how we interpret the output of the model followed by the Linear layer.
 
-# Softmax
+# Softmax - Generator
 
 The softmax layer then turns those scores into probabilities (all positive, all add up to 1.0). The cell with the highest probability is chosen, and the word associated with it is produced as the output for this time step. This is called greedy decoding.
 
@@ -204,3 +215,7 @@ Another way to do it would be to hold on to, say, the top two words (say, ‘I�
 The transformer model is a deep learning model that is based on the self-attention mechanism. It is highly parallelizable and has been shown to outperform traditional RNN-based models on many tasks.
 
 Some transformer based models used in the real world include: BERT, GPT-2, T5, and many more.
+
+Resources: 
+- https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/
+- https://jalammar.github.io/illustrated-transformer/ 

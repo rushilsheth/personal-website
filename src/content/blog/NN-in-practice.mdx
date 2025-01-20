@@ -9,6 +9,24 @@ draft: true
 
 https://www.trentonsystems.com/en-us/resource-hub/blog/neural-networks
 
+# stuff
+
+to make independent non param sharing layers: copy.deepcopy(module)
+
+nn.ModuleList is a PyTorch class that acts as a container for holding any number of PyTorch modules (layers). It is similar to a Python list but with additional functionality that is specific to PyTorch modules. When you use nn.ModuleList to store modules, it ensures that the parameters of the modules it contains are properly registered with the parent module. here is example code for transformer encoder:
+
+**`torch.triu`** returns the upper triangular part of a matrix (or batch of matrices), zeroing out the elements below the diagonal. **`diagonal=1`** means that the function zeros out everything below the first diagonal above the main diagonal. 
+
+[1,2,3,]           [0,2,3]
+
+[4,5,6]       → [0,0,6]
+
+[7,8,9]            [0,0,0]
+
+assume x is a Tensor: mean = x.mean(-1, keepdim=True). keep_dim will keep it as 2d array. aka (shape,1) vs (shape, )
+
+NN.dropout : https://jmlr.org/papers/v15/srivastava14a.html 
+
 ## training data
 
 ## training param considerations
